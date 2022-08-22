@@ -1,17 +1,53 @@
 import React from 'react';
-import ReactDOM from 'react-dom/client';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
+import ReactDOM from 'react-dom';
+import { createStore } from "redux";
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
-);
+const counter = (state = 0, action) => {
+  switch (action.type) {
+    case 'INCREMENT':
+      return state + 1;
+    case 'DECREMENT':
+      return state - 1;
+    case 'RESET':
+      return 0;
+    default:
+      return state;
+  }
+}
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
+const store = createStore(counter);
+
+const Counter = (props) => {
+  return (
+    <div>
+      <h1>{props.value}</h1>
+      <button onClick={props.onIncrement}>+</button>
+      <button onClick={props.onDecrement}>-</button>
+    </div>
+  )
+}
+
+const render = () => {
+  ReactDOM.render(
+    <Counter
+      value={store.getState()}
+      onIncrement={() =>
+        store.dispatch({
+          type: 'INCREMENT'
+        })
+      }
+      onDecrement={() =>
+        store.dispatch({
+          type: 'DECREMENT'
+        })
+      }
+    />,
+    document.getElementById('root')
+  );
+}
+
+store.subscribe(() => {
+  render();
+});
+
+render();
